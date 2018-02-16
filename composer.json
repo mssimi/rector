@@ -19,7 +19,8 @@
         "symfony/console": "^4.0",
         "symfony/dependency-injection": "^4.0",
         "symfony/finder": "^4.0",
-        "symplify/package-builder": "^3.2"
+        "symplify/package-builder": "^3.2",
+        "webmozart/assert": "^1.2"
     },
     "require-dev": {
         "symplify/easy-coding-standard": "^3.2",
