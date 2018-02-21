@@ -24,8 +24,6 @@
     },
     "require-dev": {
         "symplify/easy-coding-standard": "^3.2",
-        "humbug/box": "^3.0@dev",
-        "bamarni/composer-bin-plugin": "^1.2",
         "latte/latte": "^2.4",
         "nette/di": "^2.4",
         "nette/forms": "^2.4",
