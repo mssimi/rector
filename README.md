@@ -18,20 +18,18 @@ Rector **upgrades your application** for you, with focus on open-source projects
     <img src="/docs/images/space.png" width=20>
     <a href="/src/config/level/phpunit"><img src="/docs/images/phpunit.jpg"></a>
     <img src="/docs/images/space.png" width=20>
-    <a href="/src/config/level/roave"><img src="/docs/images/roave.png"></a>
-    <img src="/docs/images/space.png" width=20>
     <a href="/src/config/level/twig"><img src="/docs/images/twig.png"></a>
 </p>
 
 
 Rector can:
 
-- [Rename classes](#replace-a-class-name)
-- [Rename class' methods](#change-a-method-name)
-- [Rename partial namespace](#eplace-some-part-of-the-namespace)
-- [Rename pseudo-namespace to namespace](#replace-the-underscore-naming-_-with-namespaces-)
-- [Add, replace or remove arguments](#change-a-argument-value)
-- [Add typehints based on new types of parent class or interface](#remove-a-value-object-and-use-simple-type)
+- [Rename classes](/docs/DynamicRectors.md#replace-a-class-name)
+- [Rename class' methods](/docs/DynamicRectors.md#change-a-method-name)
+- [Rename partial namespace](/docs/DynamicRectors.md#replace-some-part-of-the-namespace)
+- [Rename pseudo-namespace to namespace](/docs/DynamicRectors.md#replace-the-underscore-naming-_-with-namespaces-)
+- [Add, replace or remove arguments](/docs/DynamicRectors.md#change-argument-value-or-remove-argument)
+- [Add typehints based on new types of parent class or interface](/docs/DynamicRectors.md#remove-a-value-object-and-use-simple-type)
 - And much more...
 
 ## Install
@@ -104,13 +102,19 @@ Do you need to upgrade to **Symfony 4.0**, for example?
     vendor/bin/rector process src --level symfony33 --dry-run
     ```
 
+3. What levels are on the board?
+
+    ```bash
+    vendor/bin/rector levels
+    ```
+
 ### B. Custom Sets
 
 1. Create `rector.yml` with desired Rectors:
 
     ```yml
-    rectors:
-        - Rector\Rector\Contrib\Nette\Application\InjectPropertyRector
+    services:
+        Rector\Rector\Contrib\Nette\Application\InjectPropertyRector: ~
     ```
 
 2. Try Rector on your `/src` directory:
@@ -125,293 +129,12 @@ Do you need to upgrade to **Symfony 4.0**, for example?
     vendor/bin/rector process src
     ```
 
-## Simple setup with Dynamic Rectors
+## Configure Rectors for your Case
 
 You don't have to always write PHP code. Many projects change only classes or method names, so it would be too much work for a simple task.
 
-Instead you can use prepared **Dynamic Rectors** directly in `*.yml` config:
-
-You can:
-
-### Replace a class name
-
-```yml
-# phpunit60.yml
-rectors:
-    Rector\Rector\Dynamic\ClassReplacerRector:
-        # old class: new class
-        'PHPUnit_Framework_TestCase': 'PHPUnit\Framework\TestCase'
-```
-
-### Replace some part of the namespace
-
-```yml
-# better-reflection20.yml
-rectors:
-    Rector\Rector\Dynamic\NamespaceReplacerRector:
-        # old namespace: new namespace
-        'BetterReflection': 'Roave\BetterReflection'
-```
-
-### Change a method name
-
-```yml
-rectors:
-    Rector\Rector\Dynamic\MethodNameReplacerRector:
-        # class
-        'Nette\Utils\Html':
-            # old method: new method
-            'add': 'addHtml'
-
-        # or in case of static methods calls
-
-        # class
-        'Nette\Bridges\FormsLatte\FormMacros':
-            # old method: [new class, new method]
-            'renderFormBegin': ['Nette\Bridges\FormsLatte\Runtime', 'renderFormBegin']
-```
-
-### Change a property name
-
-```yml
-rectors:
-    Rector\Rector\Dynamic\PropertyNameReplacerRector:
-        # class:
-        'PhpParser\Node\Param':
-            # old property: new property
-            'name': 'var'
-```
-
-### Change a class constant name
-
-```yml
-rectors:
-    Rector\Rector\Dynamic\ClassConstantReplacerRector:
-        # class
-        'Symfony\Component\Form\FormEvents':
-            # old constant: new constant
-            'PRE_BIND': 'PRE_SUBMIT'
-            'BIND': 'SUBMIT'
-            'POST_BIND': 'POST_SUBMIT'
-```
-
-### Change parameters type hinting according to the parent type
-
-```yml
-rectors:
-    Rector\Rector\Dynamic\ParentTypehintedArgumentRector:
-        # class
-        'PhpParser\Parser':
-            # method
-            'parse':
-                # parameter: typehint
-                'code': 'string'
-```
-
-### Change argument value or remove argument
-
-```yml
-rectors:
-    Rector\Rector\Dynamic\ArgumentReplacerRector:
-        -
-            class: 'Symfony\Component\DependencyInjection\ContainerBuilder'
-            method: 'compile'
-            position: 0
-            # change default value
-            type: 'changed'
-            default_value: false
-
-            # or remove
-            type: 'removed'
-
-            # or replace old default value by new one
-            type: 'replace_default_value'
-            replace_map:
-                'Symfony\Component\DependencyInjection\ContainerBuilder::SCOPE_PROTOTYPE': false
-```
-
-### Replace the underscore naming `_` with namespaces `\`
-
-```yml
-rectors:
-    Rector\Rector\Dynamic\PseudoNamespaceToNamespaceRector:
-        # old namespace prefix
-        - 'PHPUnit_'
-        # exclude classes
-        - '!PHPUnit_Framework_MockObject_MockObject'
-```
-
-### Modify a property to method
-
-```yml
-rectors:
-    Rector\Rector\Dynamic\PropertyToMethodRector:
-        # type
-        'Symfony\Component\Translation\Translator':
-            # property to replace
-            'locale':
-                # (prepared key): get method name
-                'get': 'getLocale'
-                # (prepared key): set method name
-                'set': 'setLocale'
-```
-
-### Remove a value object and use simple type
-
-```yml
-rectors:
-    Rector\Rector\Dynamic\ValueObjectRemoverRector:
-        # type: new simple type
-        'ValueObject\Name': 'string'
-```
-
-For example:
-
-```diff
-- $value = new ValueObject\Name('Tomas');
-+ $value = 'Tomas';
-```
-
-```diff
-/**
--* @var ValueObject\Name
-+* @var string
- */
-private $name;
-```
-
-```diff
-- public function someMethod(ValueObject\Name $name) { ...
-+ public function someMethod(string $name) { ...
-```
-
-## Replace Property and Method Annotations
-
-```yml
-rectors:
-    Rector\Rector\Dynamic\AnnotationReplacerRector:
-        # type
-        PHPUnit\Framework\TestCase:
-            # old annotation: new annotation
-            scenario: test
-```
-
-```diff
- final class SomeTest extends PHPUnit\Framework\TestCase
- {
-     /**
--     * @scenario
-+     * @test
-      */
-     public function test()
-     {
-     }
- }
-```
-
-## Turn Magic to Methods
-
-### Replace `get/set` magic methods with real ones
-
-```yml
-rectors:
-    Rector\Rector\MagicDisclosure\GetAndSetToMethodCallRector:
-        # class
-        'Nette\DI\Container':
-            # magic method (prepared keys): new real method
-            'get': 'getService'
-            'set': 'addService'
-```
-
-For example:
-
-```diff
-- $result = $container['key'];
-+ $result = $container->getService('key');
-```
-
-```diff
-- $container['key'] = $value;
-+ $container->addService('key', $value);
-```
-
-### Replace `isset/unset` magic methods with real ones
-
-```yml
-rectors:
-    Rector\Rector\MagicDisclosure\UnsetAndIssetToMethodCallRector:
-        # class
-        'Nette\DI\Container':
-            # magic method (prepared keys): new real method
-            'isset': 'hasService'
-            'unset': 'removeService'
-```
-
-For example:
-
-```diff
-- isset($container['key']);
-+ $container->hasService('key');
-```
-
-```diff
-- unset($container['key']);
-+ $container->removeService('key');
-```
-
-### Replace `toString` magic method with real one
-
-```yml
-rectors:
-    Rector\Rector\MagicDisclosure\ToStringToMethodCallRector:
-        # class
-        'Symfony\Component\Config\ConfigCache':
-            # magic method (prepared key): new real method
-            'toString': 'getPath'
-```
-
-For example:
-
-```diff
-- $result = (string) $someValue;
-+ $result = $someValue->getPath();
-```
-
-```diff
-- $result = $someValue->__toString();
-+ $result = $someValue->getPath();
-```
-
-### Remove [Fluent Interface](https://ocramius.github.io/blog/fluent-interfaces-are-evil/)
-
-```yml
-rectors:
-    Rector\Rector\Dynamic\FluentReplaceRector: ~
-```
-
-```diff
- class SomeClass
- {
-     public function setValue($value)
-     {
-         $this->value = $value;
--        return $this;
-     }
-
-     public function setAnotherValue($anontherValue)
-     {
-         $this->anotherValue = $anotherValue;
--        return $this;
-     }
- }
-
- $someClass = new SomeClass();
-- $someClass->setValue(5)
-+ $someClass->setValue(5);
--     ->setAnotherValue(10);
-+ $someClass->setAnotherValue(10);
- }
-```
+- [Dynamic Rectors](/docs/DynamicRectors.md)
+- [Turn Magic to Methods](/docs/MagicDisclosureRectors.md)
 
 ## Coding Standards are Outsourced
 
@@ -431,7 +154,7 @@ vendor/bin/ecs check --config vendor/rector/rector/ecs-after-rector.neon --fix
 ## More Detailed Documentation
 
 - [How Rector Works?](/docs/HowItWorks.md)
-- [How to Create Rector with Fluent Builer](/docs/FluentBuilderRector.md)
+- [How to Create Rector with Fluent Builder](/docs/FluentBuilderRector.md)
 - [How to Create Own Rector](/docs/HowToCreateOwnRector.md)
 - [Service Name to Type Provider](/docs/ServiceNameToTypeProvider.md)
 - [3 Steps to Build PHAR](/docs/BuildingRectorPhar.md)

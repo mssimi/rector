@@ -6,9 +6,6 @@ includes:
     - vendor/symplify/easy-coding-standard/config/clean-code.neon
 
 checkers:
-    # add temporary before in symplify.neon set
-    - Symplify\CodingStandard\Fixer\LineLength\BreakArrayListFixer
-
     # Metrics
     PHP_CodeSniffer\Standards\Generic\Sniffs\Files\LineLengthSniff:
         absoluteLineLimit: 120
@@ -58,6 +55,7 @@ parameters:
             - */packages/NodeTypeResolver/**/PerNodeTypeResolver/**TypeResolver.php
             - */packages/NodeTypeResolver/**/PerNodeTypeResolver/**TypeResolver/*Test.php
             - packages/BetterReflection/src/Reflector/SmartClassReflector.php
+            - */src/NodeAnalyzer/*.php
         SlevomatCodingStandard\Sniffs\TypeHints\TypeHintDeclarationSniff:
             # covariant types
             - */packages/NodeValueResolver/src/PerNodeValueResolver/*ValueResolver.php

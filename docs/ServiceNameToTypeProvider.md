@@ -3,7 +3,7 @@
 Some Rectors like:
 
 ```yaml
-rectors:
+services:
     Rector\Rector\Contrib\Symfony\Console\CommandToConstructorInjectionRector: ~
     Rector\Rector\Contrib\Symfony\HttpKernel\GetterToPropertyRector: ~
     Rector\Rector\Contrib\Nette\Environment\GetServiceToConstructorInjectionRector: ~
@@ -48,10 +48,6 @@ This operation could be automated on some level, but Kernel and Container API va
     ```yaml
     services:
         StaticProvider: ~
-
-        # this allows autowiring via interface
-        Rector\Contract\Bridge\ServiceTypeForNameProviderInterface:
-            alias: StaticProvider
     ```
 
 That's it!

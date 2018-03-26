@@ -2,6 +2,7 @@
 
 namespace Rector\DependencyInjection;
 
+use Rector\DependencyInjection\CompilerPass\AutowireRectorCompilerPass;
 use Rector\DependencyInjection\CompilerPass\CollectorCompilerPass;
 use Rector\NodeTypeResolver\DependencyInjection\CompilerPass\NodeTypeResolverCollectorCompilerPass;
 use Rector\RectorBuilder\DependencyInjection\CompilerPass\RectorProvidersCompilerPass;
@@ -9,6 +10,7 @@ use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 use Symfony\Component\HttpKernel\Kernel;
+use Symplify\PackageBuilder\DependencyInjection\CompilerPass\AutowireSinglyImplementedCompilerPass;
 
 final class RectorKernel extends Kernel
 {
@@ -51,15 +53,15 @@ final class RectorKernel extends Kernel
      */
     public function registerBundles(): array
     {
-        return [
-            new RectorBundle(),
-        ];
+        return [];
     }
 
     protected function build(ContainerBuilder $containerBuilder): void
     {
         $containerBuilder->addCompilerPass(new CollectorCompilerPass());
+        $containerBuilder->addCompilerPass(new AutowireRectorCompilerPass());
         $containerBuilder->addCompilerPass(new RectorProvidersCompilerPass());
         $containerBuilder->addCompilerPass(new NodeTypeResolverCollectorCompilerPass());
+        $containerBuilder->addCompilerPass(new AutowireSinglyImplementedCompilerPass());
     }
 }
